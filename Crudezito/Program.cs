@@ -50,14 +50,16 @@ namespace Crudezito
 
         static int menu()
         {
-            
+
             List<int> menuOptions = new List<int>() {1,2,3,4,5};
             int decision = default;
 
             do
             {
                 Console.WriteLine($"Current database entries:");
+                PrintLine();
                 CRUDRead(true);
+                PrintLine();
                 Console.WriteLine($"What would you like to do?:");
                 Console.WriteLine($"1 - CREATE entry");
                 Console.WriteLine($"2 - READ entry");
@@ -139,7 +141,7 @@ namespace Crudezito
                     //execute command
                     //SqlDataReader reader = ReadCommand.ExecuteReader();
 
-
+                    PrintLine();
                     SqlDataReader reader = ReadCommand.ExecuteReader();
                     while (reader.Read())
                     {
@@ -147,7 +149,7 @@ namespace Crudezito
                             reader[0], reader[1], reader[2], reader[3]);
                     }
                     reader.Close();
-
+                    PrintLine();
                 }
 
                 catch (Exception ex)
@@ -234,6 +236,7 @@ namespace Crudezito
 
         static void inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL)
         {
+            PrintLine();
             Console.Write($"EXERCISE_ID (int, ex: 100, 185, 399) = ");
             EXERCISE_ID = Convert.ToInt32(Console.ReadLine());
             Console.Write($"EXERCISE_NAME (string, ex: 'Stiff', 'RDL', 'Rows') = ");
@@ -242,6 +245,14 @@ namespace Crudezito
             FOCUS_BODY_PART = Console.ReadLine();
             Console.Write($"DIFFICULTY_LEVEL (string, ex: 'Low', 'Medium', 'High') = ");
             DIFFICULTY_LEVEL = Console.ReadLine();
+            PrintLine();
+        }
+
+
+
+        static void PrintLine ()
+        {
+            Console.WriteLine("---------------------------------------------------------------------------------");
         }
 
 
