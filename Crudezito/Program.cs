@@ -10,14 +10,9 @@ namespace Crudezito
         public const string connectionString = @"Data Source =DESKTOP-S72P1K4\SQLEXPRESS; Initial " +
             @"Catalog = MyDb; Integrated Security = true";
 
-
-
         static void Main()
         {
-
-            
             bool loop = true;
-
 
             while (loop)
             {
@@ -45,7 +40,6 @@ namespace Crudezito
             }
                 
             Console.ReadLine();
-
         }
 
         static int menu()
@@ -123,14 +117,8 @@ namespace Crudezito
                 queryStringR = $"select * from dbo.EXERCISE where EXERCISE_ID = {EXERCISE_ID}";
             }
 
-            //create command that I want to query (insert into DB)
-            
-            //First create connection object
-            //using "using" you guarantee that the connection is closed after code block execution
-
             using (SqlConnection connection = new(Program.connectionString))
             {
-                //Creating the command object that the query is going to execute, giving the connection object 
                 SqlCommand ReadCommand = new(queryStringR, connection);
 
                 try
@@ -139,9 +127,6 @@ namespace Crudezito
                     connection.Open();
 
                     //execute command
-                    //SqlDataReader reader = ReadCommand.ExecuteReader();
-
-                    PrintLine();
                     SqlDataReader reader = ReadCommand.ExecuteReader();
                     while (reader.Read())
                     {
@@ -149,14 +134,12 @@ namespace Crudezito
                             reader[0], reader[1], reader[2], reader[3]);
                     }
                     reader.Close();
-                    PrintLine();
                 }
 
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
-
             }
         }
 
@@ -166,11 +149,9 @@ namespace Crudezito
 
             inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL);
 
-
-            //create command that I want to query (insert into DB)
+            //create command that I want to query (update entry of DB)
             string queryStringU = $"update dbo.EXERCISE SET EXERCISE_NAME = {EXERCISE_NAME}, FOCUS_BODY_PART = {FOCUS_BODY_PART}, DIFFICULTY_LEVEL = {DIFFICULTY_LEVEL}  WHERE EXERCISE_ID = {EXERCISE_ID}";
             
-
             //First create connection object
             //using "using" you guarantee that the connection is closed after code block execution
 
@@ -204,7 +185,7 @@ namespace Crudezito
             Console.Write($"EXERCISE_ID = ");
             int EXERCISE_ID = Convert.ToInt32(Console.ReadLine());
 
-            //create command that I want to query (insert into DB)
+            //create command that I want to query (delete entry of DB)
             string queryStringD = $"DELETE FROM dbo.EXERCISE WHERE EXERCISE_ID = {EXERCISE_ID};";
 
 
@@ -247,8 +228,6 @@ namespace Crudezito
             DIFFICULTY_LEVEL = Console.ReadLine();
             PrintLine();
         }
-
-
 
         static void PrintLine ()
         {
