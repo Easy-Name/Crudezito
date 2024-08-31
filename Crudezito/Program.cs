@@ -82,10 +82,10 @@ namespace Crudezito
             //First create connection object
             //using "using" you guarantee that the connection is closed after code block execution
 
-            using (SqlConnection connection = new(Program.connectionString))
+            using (SqlConnection connection = new(connectionString))
+            using (SqlCommand CreateCommand = new(queryStringC, connection))
             {
                 //Creating the command object that the query is going to execute, giving the connection object 
-                SqlCommand CreateCommand = new(queryStringC, connection);
 
                 try
                 {
@@ -101,7 +101,11 @@ namespace Crudezito
                 {
                     Console.WriteLine(ex.Message);
                 }
-
+                finally
+                { 
+                    //TODO: if (connection. null) { VERIFICAR SE A CONEXÃO ESTÁ ABERTA, CASO ESTEJA ABERTA EU FECHO ELA, CASO NÃO ESTEJA ABERTA, NÃO FAÇO NADA, VERIFICAR SE O USING TAMBÉM MATA A CONEXÃO
+                    connection.Close();
+                }
             }
         }
 
@@ -128,6 +132,7 @@ namespace Crudezito
 
                     //execute command
                     SqlDataReader reader = ReadCommand.ExecuteReader();
+                    
                     while (reader.Read())
                     {
                         Console.WriteLine("\t{0}\t{1}\t{2}\t{3}",
