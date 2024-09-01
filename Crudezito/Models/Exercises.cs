@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Crudezito.Models
 {
-    internal class Exercises
+    public class Exercises
     {
+        public int Id { get; set; }
+        public int MyProperty { get; set; }
     }
 }
