@@ -1,65 +1,99 @@
 ﻿using System.Data.SqlClient;
 using System;
 using System.Data;
+using Crudezito.Models;
+using Crudezito.Repositories;
 
 namespace Crudezito
 {
-    public static class Program
+    public class Program
     {
-
-        public const string connectionString = @"Data Source =DESKTOP-S72P1K4\SQLEXPRESS; Initial " +
-            @"Catalog = MyDb; Integrated Security = true";
-
         static void Main()
         {
+            var program = new Program();
+            program.CRUD();
+            Console.ReadLine();
+        }
+
+        public void CRUD()
+        {
+            //Responsible for interacting with the user (collecting and displaying information and messages)
+
             bool loop = true;
+            var exerciseRepository = new ExerciseRepository();
 
             while (loop)
             {
-                int decision = menu();
+                int decision = Menu();
 
                 switch (decision)
                 {
                     case 1:
-                        CRUDCreate();
+                        Inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL);
+                        var result = exerciseRepository.Insert(EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL);
+
                         break;
                     case 2:
-                        CRUDRead(false);
+                        CurrentEntries();
+                        PrintLine();
+                        var getAll = exerciseRepository.GetAll(); 
+
+                        int i = 0;
+                        foreach (Exercises gymExercice in getAll)
+                        {
+                            Console.WriteLine($"Exercise ID: {getAll[i].ExerciseId}");
+                            Console.WriteLine($"Exercise Name: {getAll[i].ExerciseName}");
+                            Console.WriteLine($"Target Body Part: {getAll[i].FocusBodyPart}");
+                            Console.WriteLine($"Difficulty Level: {getAll[i].DifficultyLevel}");
+                            Console.WriteLine();
+                            i++;
+                        }
+
+                        PrintLine();
                         break;
                     case 3:
-                        CRUDUpdate();
+                        PrintLine();
+                        var getById = exerciseRepository.GetByID(ExerciseID()); 
+                        Console.WriteLine($"Exercise ID: {getById.ExerciseId}");
+                        Console.WriteLine($"Exercise Name: {getById.ExerciseName}");
+                        Console.WriteLine($"Target Body Part: {getById.FocusBodyPart}");
+                        Console.WriteLine($"Difficulty Level: {getById.DifficultyLevel}");
+
+
+                        PrintLine();
                         break;
                     case 4:
-                        CRUDDelete();
+                        Inputs(out EXERCISE_ID, out EXERCISE_NAME, out FOCUS_BODY_PART, out DIFFICULTY_LEVEL);
+                        result = exerciseRepository.Update(EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL);
                         break;
                     case 5:
+                        result = exerciseRepository.Delete(ExerciseID());
+                        PrintLine();
+                        break;
+                    case 6:
                         loop = false;
-                        Console.WriteLine("Bye!");
+                        PrintLine();
+                        ByeMessage();
                         break;
                 }
             }
-                
-            Console.ReadLine();
         }
 
-        static int menu()
+        public int Menu()
         {
 
-            List<int> menuOptions = new List<int>() {1,2,3,4,5};
+            List<int> menuOptions = new List<int>() { 1, 2, 3, 4, 5, 6 };
             int decision = default;
 
             do
             {
-                Console.WriteLine($"Current database entries:");
-                PrintLine();
-                CRUDRead(true);
-                PrintLine();
                 Console.WriteLine($"What would you like to do?:");
-                Console.WriteLine($"1 - CREATE entry");
-                Console.WriteLine($"2 - READ entry");
-                Console.WriteLine($"3 - UPDATE entry");
-                Console.WriteLine($"4 - DELETE entry");
-                Console.WriteLine($"5 - Exit Program");
+                Console.WriteLine($"1 - Insert entry");
+                Console.WriteLine($"2 - Get All");
+                Console.WriteLine($"3 - Get entry by ID");
+                Console.WriteLine($"4 - Update entry");
+                Console.WriteLine($"5 - Delete entry");
+                Console.WriteLine($"6 - Exit Program");
 
                 decision = Convert.ToInt32(Console.ReadLine());
                 if (!menuOptions.Contains(decision))
@@ -67,155 +101,10 @@ namespace Crudezito
                     Console.WriteLine($"Enter a valid option, {decision} is invalid!");
                 }
             } while (!menuOptions.Contains(decision));
-            
+
             return decision;
         }
-
-        static void CRUDCreate()
-        {
-            inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL);
-
-            //create command that I want to query (insert into DB)
-            string queryStringC = "insert into EXERCISE (EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL) " +
-                                  $"values ({EXERCISE_ID}, {EXERCISE_NAME}, {FOCUS_BODY_PART}, {DIFFICULTY_LEVEL});";
-
-            //First create connection object
-            //using "using" you guarantee that the connection is closed after code block execution
-
-            using (SqlConnection connection = new(Program.connectionString))
-            {
-                //Creating the command object that the query is going to execute, giving the connection object 
-                SqlCommand CreateCommand = new(queryStringC, connection);
-
-                try
-                {
-                    //establish connection
-                    connection.Open();
-
-                    //execute command
-                    CreateCommand.ExecuteNonQuery();
-
-                }
-
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-
-            }
-        }
-
-        static void CRUDRead(bool ListAll)
-        {
-
-            string queryStringR = $"select * from dbo.EXERCISE";
-
-            if (!ListAll)
-            {
-                Console.Write($"EXERCISE_ID = ");
-                int EXERCISE_ID = Convert.ToInt32(Console.ReadLine());
-                queryStringR = $"select * from dbo.EXERCISE where EXERCISE_ID = {EXERCISE_ID}";
-            }
-
-            using (SqlConnection connection = new(Program.connectionString))
-            {
-                SqlCommand ReadCommand = new(queryStringR, connection);
-
-                try
-                {
-                    //establish connection
-                    connection.Open();
-
-                    //execute command
-                    SqlDataReader reader = ReadCommand.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Console.WriteLine("\t{0}\t{1}\t{2}\t{3}",
-                            reader[0], reader[1], reader[2], reader[3]);
-                    }
-                    reader.Close();
-                }
-
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
-        }
-
-
-        static void CRUDUpdate()
-        {
-
-            inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL);
-
-            //create command that I want to query (update entry of DB)
-            string queryStringU = $"update dbo.EXERCISE SET EXERCISE_NAME = {EXERCISE_NAME}, FOCUS_BODY_PART = {FOCUS_BODY_PART}, DIFFICULTY_LEVEL = {DIFFICULTY_LEVEL}  WHERE EXERCISE_ID = {EXERCISE_ID}";
-            
-            //First create connection object
-            //using "using" you guarantee that the connection is closed after code block execution
-
-            using (SqlConnection connection = new(Program.connectionString))
-            {
-                //Creating the command object that the query is going to execute, giving the connection object 
-                SqlCommand UpdateCommand = new(queryStringU, connection);
-
-                try
-                {
-                    //establish connection
-                    connection.Open();
-
-                    //execute command
-                    UpdateCommand.ExecuteNonQuery();
-
-                }
-
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-
-            }
-        }
-
-
-        static void CRUDDelete()
-        {
-
-            Console.Write($"EXERCISE_ID = ");
-            int EXERCISE_ID = Convert.ToInt32(Console.ReadLine());
-
-            //create command that I want to query (delete entry of DB)
-            string queryStringD = $"DELETE FROM dbo.EXERCISE WHERE EXERCISE_ID = {EXERCISE_ID};";
-
-
-            //First create connection object
-            //using "using" you guarantee that the connection is closed after code block execution
-
-            using (SqlConnection connection = new(Program.connectionString))
-            {
-                //Creating the command object that the query is going to execute, giving the connection object 
-                SqlCommand DeleteCommand = new(queryStringD, connection);
-
-                try
-                {
-                    //establish connection
-                    connection.Open();
-
-                    //execute command
-                    DeleteCommand.ExecuteNonQuery();
-
-                }
-
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-
-            }
-        }
-
-        static void inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL)
+        public void Inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL)
         {
             PrintLine();
             Console.Write($"EXERCISE_ID (int, ex: 100, 185, 399) = ");
@@ -228,30 +117,27 @@ namespace Crudezito
             DIFFICULTY_LEVEL = Console.ReadLine();
             PrintLine();
         }
+        public int ExerciseID()
+        {
+            Console.Write($"EXERCISE_ID = ");
+            return Convert.ToInt32(Console.ReadLine());
+        }
 
-        static void PrintLine ()
+        public void PrintLine()
         {
             Console.WriteLine("---------------------------------------------------------------------------------");
         }
 
+        public void ByeMessage()
+        {
+            Console.WriteLine($"Bye!");
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        public void CurrentEntries()
+        {
+            Console.WriteLine($"Current database entries:");
+        }
 
     }
 }
+
