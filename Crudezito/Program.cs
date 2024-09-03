@@ -8,12 +8,12 @@ namespace Crudezito
 {
     public class Program
     {
-        void main()
+        static void Main()
         {
-            CRUD();
+            var program = new Program();
+            program.CRUD();
             Console.ReadLine();
         }
-
 
         public void CRUD()
         {
@@ -36,16 +36,28 @@ namespace Crudezito
                     case 2:
                         CurrentEntries();
                         PrintLine();
-                        var getAll = exerciseRepository.GetAll(); //TODO----------------------------------
+                        var getAll = exerciseRepository.GetAll(); 
+
+                        int i = 0;
+                        foreach (Exercises gymExercice in getAll)
+                        {
+                            Console.WriteLine($"Exercise ID: {getAll[i].ExerciseId}");
+                            Console.WriteLine($"Exercise Name: {getAll[i].ExerciseName}");
+                            Console.WriteLine($"Target Body Part: {getAll[i].FocusBodyPart}");
+                            Console.WriteLine($"Difficulty Level: {getAll[i].DifficultyLevel}");
+                            Console.WriteLine();
+                            i++;
+                        }
+
                         PrintLine();
                         break;
                     case 3:
                         PrintLine();
-                        var getById = exerciseRepository.GetByID(ExerciseID()); //TODO--------------------------
-                        Console.WriteLine(getById.ExerciseId);
-                        Console.WriteLine(getById.ExerciseName);
-                        Console.WriteLine(getById.FocusBodyPart);
-                        Console.WriteLine(getById.DifficultyLevel);
+                        var getById = exerciseRepository.GetByID(ExerciseID()); 
+                        Console.WriteLine($"Exercise ID: {getById.ExerciseId}");
+                        Console.WriteLine($"Exercise Name: {getById.ExerciseName}");
+                        Console.WriteLine($"Target Body Part: {getById.FocusBodyPart}");
+                        Console.WriteLine($"Difficulty Level: {getById.DifficultyLevel}");
 
 
                         PrintLine();
@@ -77,8 +89,8 @@ namespace Crudezito
             {
                 Console.WriteLine($"What would you like to do?:");
                 Console.WriteLine($"1 - Insert entry");
-                Console.WriteLine($"2 - List All");
-                Console.WriteLine($"3 - List entry by ID");
+                Console.WriteLine($"2 - Get All");
+                Console.WriteLine($"3 - Get entry by ID");
                 Console.WriteLine($"4 - Update entry");
                 Console.WriteLine($"5 - Delete entry");
                 Console.WriteLine($"6 - Exit Program");
@@ -92,9 +104,6 @@ namespace Crudezito
 
             return decision;
         }
-
-
-
         public void Inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL)
         {
             PrintLine();
@@ -108,7 +117,6 @@ namespace Crudezito
             DIFFICULTY_LEVEL = Console.ReadLine();
             PrintLine();
         }
-
         public int ExerciseID()
         {
             Console.Write($"EXERCISE_ID = ");

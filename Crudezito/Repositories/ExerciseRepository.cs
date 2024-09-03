@@ -11,8 +11,8 @@ namespace Crudezito.Repositories
 {
     public class ExerciseRepository
     {
-        //Classe que faz acesso a dados
-        //ele é meu back end
+        //this class controls all access to database
+        //this class is my backend
 
 
         private readonly string _connectionString = @"Data Source =DESKTOP-S72P1K4\SQLEXPRESS; Initial " +
@@ -59,7 +59,7 @@ namespace Crudezito.Repositories
             }
         }
 
-        public List<Exercises> GetAll() //TODO PRECISO RETORNAR UMA CLASSE COM OS CAMPOS PREENCHIDOS
+        public List<Exercises> GetAll() 
         {
 
             string queryStringR = $"select * from dbo.EXERCISE";
@@ -67,12 +67,13 @@ namespace Crudezito.Repositories
             using (SqlConnection connection = new(_connectionString))
             {
                 SqlCommand ReadCommand = new(queryStringR, connection);
-                SqlDataReader reader = ReadCommand.ExecuteReader();
+                //SqlDataReader reader = ReadCommand.ExecuteReader();
 
                 try
                 {
                     //establish connection
                     connection.Open();
+                    SqlDataReader reader = ReadCommand.ExecuteReader();
 
                     //execute command
                     //SqlDataReader reader = ReadCommand.ExecuteReader();
@@ -87,10 +88,7 @@ namespace Crudezito.Repositories
                         exercise.DifficultyLevel = reader[3].ToString();
 
                         exercises.Add(exercise);
-                        /*
-                        Console.WriteLine("\t{0}\t{1}\t{2}\t{3}",
-                            reader[0], reader[1], reader[2], reader[3]);
-                        */
+
                     }
                     //reader.Close();
                     return exercises;
@@ -111,7 +109,7 @@ namespace Crudezito.Repositories
                 }
                 finally //used to execute what i want to guarantee that will be executed
                 {
-                    reader.Close();
+                    //reader.Close();
                     ReadCommand.Dispose(); //using dispose i will have to create a new object if i want to use it again
                 }
             }
@@ -125,25 +123,22 @@ namespace Crudezito.Repositories
             using (SqlConnection connection = new(_connectionString))
             {
                 SqlCommand ReadCommand = new(queryStringR, connection);
-                SqlDataReader reader = ReadCommand.ExecuteReader();
+                
 
                 try
                 {
                    //establish connection
                    connection.Open();
+                   SqlDataReader reader = ReadCommand.ExecuteReader();
 
-                   //execute command
-                   reader.Read();
+                    //execute command
+                    reader.Read();
                     
                    var exercise = new Exercises();
                    exercise.ExerciseId = Convert.ToInt32(reader[0]);
                    exercise.ExerciseName = reader[1].ToString();
                    exercise.FocusBodyPart = reader[2].ToString();
                    exercise.DifficultyLevel = reader[3].ToString();
-
-                        /*Console.WriteLine("\t{0}\t{1}\t{2}\t{3}",
-                            reader[0], reader[1], reader[2], reader[3]);*/
-                    //reader.Close();
 
                     return exercise;
                 }
@@ -155,12 +150,11 @@ namespace Crudezito.Repositories
                 }
                 finally //used to execute what i want to guarantee that will be executed
                 {
-                    reader.Close();
+                    //reader.Close();
                     ReadCommand.Dispose(); //using dispose i will have to create a new object if i want to use it again
                 }
             }
         }
-
 
         public bool Update(int exerciseId, string exerciseName, string focusBodyPart, string difficultyLevel)
         {
@@ -200,7 +194,6 @@ namespace Crudezito.Repositories
             }
         }
 
-
         public bool Delete(int EXERCISE_ID) 
         {
             
@@ -238,25 +231,6 @@ namespace Crudezito.Repositories
 
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 }
