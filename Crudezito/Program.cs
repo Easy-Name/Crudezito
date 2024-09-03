@@ -6,67 +6,81 @@ using Crudezito.Repositories;
 
 namespace Crudezito
 {
-    public static class Program
+    public class Program
     {
-
-        static void Main()
+        void main()
         {
+            CRUD();
+            Console.ReadLine();
+        }
+
+
+        public void CRUD()
+        {
+            //Responsible for interacting with the user (collecting and displaying information and messages)
+
             bool loop = true;
+            var exerciseRepository = new ExerciseRepository();
 
             while (loop)
             {
-                int decision = menu();
+                int decision = Menu();
 
                 switch (decision)
                 {
                     case 1:
-                        inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL);
-                        ExerciseRepository.Insert(EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL); 
-                        //preciso pegar os valores na main (não no método Create)
+                        Inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL);
+                        var result = exerciseRepository.Insert(EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL);
+
                         break;
                     case 2:
                         CurrentEntries();
                         PrintLine();
-                        ExerciseRepository.ListAll();
+                        var getAll = exerciseRepository.GetAll(); //TODO----------------------------------
                         PrintLine();
                         break;
                     case 3:
                         PrintLine();
-                        ExerciseRepository.ListByID(exerciseID());
+                        var getById = exerciseRepository.GetByID(ExerciseID()); //TODO--------------------------
+                        Console.WriteLine(getById.ExerciseId);
+                        Console.WriteLine(getById.ExerciseName);
+                        Console.WriteLine(getById.FocusBodyPart);
+                        Console.WriteLine(getById.DifficultyLevel);
+
+
                         PrintLine();
                         break;
                     case 4:
-                        inputs(out EXERCISE_ID, out EXERCISE_NAME, out FOCUS_BODY_PART, out DIFFICULTY_LEVEL);
-                        ExerciseRepository.Update(EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL);
+                        Inputs(out EXERCISE_ID, out EXERCISE_NAME, out FOCUS_BODY_PART, out DIFFICULTY_LEVEL);
+                        result = exerciseRepository.Update(EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL);
                         break;
                     case 5:
-                        ExerciseRepository.Delete(exerciseID());
+                        result = exerciseRepository.Delete(ExerciseID());
+                        PrintLine();
                         break;
                     case 6:
                         loop = false;
+                        PrintLine();
                         ByeMessage();
                         break;
                 }
             }
-                
-            Console.ReadLine();
         }
 
-        static int menu()
+        public int Menu()
         {
 
-            List<int> menuOptions = new List<int>() {1,2,3,4,5,6};
+            List<int> menuOptions = new List<int>() { 1, 2, 3, 4, 5, 6 };
             int decision = default;
 
             do
             {
-
                 Console.WriteLine($"What would you like to do?:");
-                Console.WriteLine($"1 - CREATE entry");
+                Console.WriteLine($"1 - Insert entry");
                 Console.WriteLine($"2 - List All");
                 Console.WriteLine($"3 - List entry by ID");
-                Console.WriteLine($"4 - UPDATE entry");
-                Console.WriteLine($"5 - DELETE entry");
+                Console.WriteLine($"4 - Update entry");
+                Console.WriteLine($"5 - Delete entry");
                 Console.WriteLine($"6 - Exit Program");
 
                 decision = Convert.ToInt32(Console.ReadLine());
@@ -75,13 +89,13 @@ namespace Crudezito
                     Console.WriteLine($"Enter a valid option, {decision} is invalid!");
                 }
             } while (!menuOptions.Contains(decision));
-            
+
             return decision;
         }
 
 
 
-        public static void inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL)
+        public void Inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL)
         {
             PrintLine();
             Console.Write($"EXERCISE_ID (int, ex: 100, 185, 399) = ");
@@ -95,43 +109,27 @@ namespace Crudezito
             PrintLine();
         }
 
-        public static int exerciseID()
+        public int ExerciseID()
         {
             Console.Write($"EXERCISE_ID = ");
             return Convert.ToInt32(Console.ReadLine());
         }
 
-        static void PrintLine ()
+        public void PrintLine()
         {
             Console.WriteLine("---------------------------------------------------------------------------------");
         }
 
-        static void ByeMessage()
+        public void ByeMessage()
         {
             Console.WriteLine($"Bye!");
         }
 
-        static void CurrentEntries()
+        public void CurrentEntries()
         {
             Console.WriteLine($"Current database entries:");
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 }
+

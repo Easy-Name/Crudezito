@@ -8,7 +8,9 @@ namespace Crudezito.Models
 {
     public class Exercises
     {
-        public int Id { get; set; }
-        public int MyProperty { get; set; }
+        public int ExerciseId { get; set; }
+        public string ExerciseName { get; set; }
+        public string FocusBodyPart { get; set; }
+        public string DifficultyLevel { get; set; }
     }
 }
