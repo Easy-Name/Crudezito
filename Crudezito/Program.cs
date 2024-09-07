@@ -29,8 +29,12 @@ namespace Crudezito
                 switch (decision)
                 {
                     case 1:
-                        Inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL);
-                        var result = exerciseRepository.Insert(EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL);
+                        InputsCreate(out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL);
+                        Exercises Item = new Exercises(EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL);
+
+                        //parametro das funções serem uma classe exercise
+
+                        var result = exerciseRepository.Insert(Item);
 
                         break;
                     case 2:
@@ -38,15 +42,13 @@ namespace Crudezito
                         PrintLine();
                         var getAll = exerciseRepository.GetAll(); 
 
-                        int i = 0;
-                        foreach (Exercises gymExercice in getAll)
+                        for (int i = 0; i < getAll.Count(); i++)
                         {
                             Console.WriteLine($"Exercise ID: {getAll[i].ExerciseId}");
                             Console.WriteLine($"Exercise Name: {getAll[i].ExerciseName}");
                             Console.WriteLine($"Target Body Part: {getAll[i].FocusBodyPart}");
                             Console.WriteLine($"Difficulty Level: {getAll[i].DifficultyLevel}");
                             Console.WriteLine();
-                            i++;
                         }
 
                         PrintLine();
@@ -58,13 +60,13 @@ namespace Crudezito
                         Console.WriteLine($"Exercise Name: {getById.ExerciseName}");
                         Console.WriteLine($"Target Body Part: {getById.FocusBodyPart}");
                         Console.WriteLine($"Difficulty Level: {getById.DifficultyLevel}");
-
-
                         PrintLine();
                         break;
                     case 4:
-                        Inputs(out EXERCISE_ID, out EXERCISE_NAME, out FOCUS_BODY_PART, out DIFFICULTY_LEVEL);
-                        result = exerciseRepository.Update(EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL);
+                        InputsUpdate(out int EXERCISE_ID, out EXERCISE_NAME, out FOCUS_BODY_PART, out DIFFICULTY_LEVEL);
+
+                        Exercises ItemUpdate = new Exercises(EXERCISE_ID, EXERCISE_NAME , FOCUS_BODY_PART , DIFFICULTY_LEVEL);
+                        result = exerciseRepository.Update(ItemUpdate);
                         break;
                     case 5:
                         result = exerciseRepository.Delete(ExerciseID());
@@ -104,19 +106,44 @@ namespace Crudezito
 
             return decision;
         }
-        public void Inputs(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL)
+        public void InputsUpdate(out int EXERCISE_ID, out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL)
         {
             PrintLine();
             Console.Write($"EXERCISE_ID (int, ex: 100, 185, 399) = ");
             EXERCISE_ID = Convert.ToInt32(Console.ReadLine());
             Console.Write($"EXERCISE_NAME (string, ex: 'Stiff', 'RDL', 'Rows') = ");
-            EXERCISE_NAME = Console.ReadLine();
+            EXERCISE_NAME = TreatString(Console.ReadLine());
             Console.Write($"FOCUS_BODY_PART (string, ex: 'Chest', 'Back', 'Leg') = ");
-            FOCUS_BODY_PART = Console.ReadLine();
+            FOCUS_BODY_PART = TreatString(Console.ReadLine());
             Console.Write($"DIFFICULTY_LEVEL (string, ex: 'Low', 'Medium', 'High') = ");
-            DIFFICULTY_LEVEL = Console.ReadLine();
+            DIFFICULTY_LEVEL = TreatString(Console.ReadLine());
             PrintLine();
         }
+        public void InputsCreate(out string EXERCISE_NAME, out string FOCUS_BODY_PART, out string DIFFICULTY_LEVEL)
+        {
+            PrintLine();
+            Console.Write($"EXERCISE_NAME (string, ex: 'Stiff', 'RDL', 'Rows') = ");
+            EXERCISE_NAME = TreatString(Console.ReadLine());
+            Console.Write($"FOCUS_BODY_PART (string, ex: 'Chest', 'Back', 'Leg') = ");
+            FOCUS_BODY_PART = TreatString(Console.ReadLine());
+            Console.Write($"DIFFICULTY_LEVEL (string, ex: 'Low', 'Medium', 'High') = ");
+            DIFFICULTY_LEVEL = TreatString(Console.ReadLine());
+            PrintLine();
+        }
+
+        string TreatString(string @string)
+        {
+            char v = '\'';
+            if (@string[0] == v && @string[@string.Length-1] == v)
+            {
+                return @string;
+            }
+            else 
+            {
+                return "'"+@string+"'";
+            }
+        }
+
         public int ExerciseID()
         {
             Console.Write($"EXERCISE_ID = ");
