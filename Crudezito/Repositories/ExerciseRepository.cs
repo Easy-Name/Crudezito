@@ -19,12 +19,12 @@ namespace Crudezito.Repositories
         @"Catalog = MyDb; Integrated Security = true";
         //readonly is like const, but you can alter it in the class constructor, const cant be altered in the class constructor
 
-        public bool Insert(int EXERCISE_ID, string EXERCISE_NAME, string FOCUS_BODY_PART, string DIFFICULTY_LEVEL)
+        public bool Insert(Exercises exercise)
         {
 
             //create command that I want to query (insert into DB)
-            string queryStringC = "insert into EXERCISE (EXERCISE_ID, EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL) " +
-                                  $"values ({EXERCISE_ID}, {EXERCISE_NAME}, {FOCUS_BODY_PART}, {DIFFICULTY_LEVEL});";
+            string queryStringC = "insert into EXERCISE (EXERCISE_NAME, FOCUS_BODY_PART, DIFFICULTY_LEVEL) " +
+                                  $"values ({exercise.ExerciseName}, {exercise.FocusBodyPart}, {exercise.DifficultyLevel});";
 
             //First create connection object
             //using "using" you guarantee that the connection is closed after code block execution
@@ -81,14 +81,8 @@ namespace Crudezito.Repositories
 
                     while (reader.Read())
                     {
-                        var exercise = new Exercises();
-                        exercise.ExerciseId = Convert.ToInt32(reader[0]);
-                        exercise.ExerciseName = reader[1].ToString();
-                        exercise.FocusBodyPart = reader[2].ToString();
-                        exercise.DifficultyLevel = reader[3].ToString();
-
+                        var exercise = new Exercises(Convert.ToInt32(reader[0]), reader[1].ToString(), reader[2].ToString(), reader[3].ToString());
                         exercises.Add(exercise);
-
                     }
                     //reader.Close();
                     return exercises;
@@ -131,16 +125,12 @@ namespace Crudezito.Repositories
                    connection.Open();
                    SqlDataReader reader = ReadCommand.ExecuteReader();
 
-                    //execute command
-                    reader.Read();
+                   //execute command
+                   reader.Read();
                     
-                   var exercise = new Exercises();
-                   exercise.ExerciseId = Convert.ToInt32(reader[0]);
-                   exercise.ExerciseName = reader[1].ToString();
-                   exercise.FocusBodyPart = reader[2].ToString();
-                   exercise.DifficultyLevel = reader[3].ToString();
+                   var exercise = new Exercises(Convert.ToInt32(reader[0]), reader[1].ToString(), reader[2].ToString(), reader[3].ToString());
 
-                    return exercise;
+                   return exercise;
                 }
 
                 catch (Exception)
@@ -156,10 +146,10 @@ namespace Crudezito.Repositories
             }
         }
 
-        public bool Update(int exerciseId, string exerciseName, string focusBodyPart, string difficultyLevel)
+        public bool Update(Exercises exercise)
         {
             //create command that I want to query (update entry of DB)
-            string queryStringU = $"update dbo.EXERCISE SET EXERCISE_NAME = {exerciseName}, FOCUS_BODY_PART = {focusBodyPart}, DIFFICULTY_LEVEL = {difficultyLevel}  WHERE EXERCISE_ID = {exerciseId}";
+            string queryStringU = $"update dbo.EXERCISE SET EXERCISE_NAME = {exercise.ExerciseName}, FOCUS_BODY_PART = {exercise.FocusBodyPart}, DIFFICULTY_LEVEL = {exercise.DifficultyLevel}  WHERE EXERCISE_ID = {exercise.ExerciseId}";
 
             //First create connection object
             //using "using" you guarantee that the connection is closed after code block execution
